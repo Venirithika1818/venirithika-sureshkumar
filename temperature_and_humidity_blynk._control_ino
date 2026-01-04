@@ -1,0 +1,37 @@
+#define BLYNK_PRINT Serial
+#define BLYNK_TEMPLATE_ID "TMPL3CXHfO11N"
+#define BLYNK_TEMPLATE_NAME "temperature and humidity sensor"
+#define BLYNK_AUTH_TOKEN "OXqTzi84cKc-V7eKKAAIcKof9rRp40y3"
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <DHT.h>
+
+DHT dht(2, DHT11);
+
+
+char SSID[] = "EIOT";
+char PASS[] = "GsBt@333";
+char AUTH[] = BLYNK_AUTH_TOKEN;
+
+void setup(){
+  Serial.begin(9600);
+  Blynk.begin(AUTH, SSID, PASS);
+  dht.begin();
+}
+void loop()
+{
+  Blynk.run();
+  int hum = dht.readHumidity();
+  float temp = dht.readTemperature();
+  Serial.println(hum);
+  Serial.println(temp);
+  Blynk.virtualWrite(V0,temp);
+  Blynk.virtualWrite(V1,hum);
+  delay(1000);
+
+  if(temp>=35)
+  {
+    Blynk.logEvent("temperature_alert","temperature alert");
+  }
+}
